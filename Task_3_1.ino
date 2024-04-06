@@ -1,16 +1,16 @@
 #include <WiFiNINA.h>
 #include <Wire.h>
-#include "secrets.h" // Make sure this file has your WiFi credentials
+#include "secrets.h" 
 
-// WiFi credentials
+
 char ssid[] = SECRET_SSID;
 char pass[] = SECRET_PASSWORD;
 
 WiFiClient client;
 char HOST_NAME[] = "maker.ifttt.com";
-String YOUR_IFTTT_KEY = "dGWDPYeZ0gcTCz-vetzuuP"; // Replace with your IFTTT key
+String YOUR_IFTTT_KEY = "dGWDPYeZ0gcTCz-vetzuuP"; 
 
-// BH1750 sensor address
+
 const int BH1750_address = 0x23;
 
 void setup() {
@@ -18,7 +18,7 @@ void setup() {
   Wire.begin(); // Initialize I2C for the BH1750 sensor
   WiFi.begin(ssid, pass); // Connect to WiFi
 
-  // Check for WiFi connection
+  
   Serial.print("Connecting to WiFi");
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -31,7 +31,7 @@ void setup() {
   Wire.write(0x01); // Power on
   Wire.endTransmission();
   Wire.beginTransmission(BH1750_address);
-  Wire.write(0x10); // Continuous high resolution mode
+  Wire.write(0x10);
   Wire.endTransmission();
 }
 
@@ -39,14 +39,14 @@ void loop() {
   int lightLevel = readLightSensor(); // Get the current light level from the sensor
   
   if (lightLevel > 300) {
-    // If light level is above 300 lux, trigger the "sunlight_start" event
+    
     triggerIFTTT("sunlight_start", lightLevel);
   } else if (lightLevel < 30) {
-    // If light level is below 30 lux, trigger the "sunlight_end" event
+    
     triggerIFTTT("sunlight_end", lightLevel);
   }
 
-  delay(10000); // Delay to prevent constant triggering/checking (adjust as needed)
+  delay(10000); 
 }
 
 int readLightSensor() {
@@ -61,7 +61,7 @@ int readLightSensor() {
 
 void triggerIFTTT(String eventName, int lightLevel) {
   if (client.connect(HOST_NAME, 80)) {
-    // Construct the query string with the event name and light level
+    
     String queryString = "/trigger/" + eventName + "/with/key/" + YOUR_IFTTT_KEY 
                          + "?value1=" + String(lightLevel);
     // Make the HTTP request to IFTTT
